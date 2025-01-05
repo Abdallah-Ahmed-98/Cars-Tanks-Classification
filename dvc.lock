@@ -1,0 +1,129 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/cnnClassifier/pipeline/stage_01_data_ingestion.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: c8d41d54e3887617572ce5f31797a36f
+      size: 1083
+    - path: src/cnnClassifier/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: 5a24c8e8f35413026b723a923ab3cc5d
+      size: 884
+    outs:
+    - path: artifacts/data_ingestion/Cars-Tanks-Dataset
+      hash: md5
+      md5: b10e150d1c58831b22b34b6b5f7bc11b.dir
+      size: 54994658
+      nfiles: 1503
+  prepare_base_model:
+    cmd: python src/cnnClassifier/pipeline/stage_02_prepare_base_model.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: c8d41d54e3887617572ce5f31797a36f
+      size: 1083
+    - path: src/cnnClassifier/pipeline/stage_02_prepare_base_model.py
+      hash: md5
+      md5: 81cbb3ca39daf4c404c955f15b6c2942
+      size: 967
+    params:
+      params.yaml:
+        CLASSES: 2
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+        INCLUDE_TOP: false
+        LEARNING_RATE: 0.001
+        WEIGHTS: imagenet
+    outs:
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 6f8013d1c254853d4419953f5f7e4565.dir
+      size: 240935872
+      nfiles: 2
+  training:
+    cmd: python src/cnnClassifier/pipeline/stage_03_model_trainer.py
+    deps:
+    - path: artifacts/data_ingestion/Cars-Tanks-Dataset
+      hash: md5
+      md5: b10e150d1c58831b22b34b6b5f7bc11b.dir
+      size: 54994658
+      nfiles: 1503
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 6f8013d1c254853d4419953f5f7e4565.dir
+      size: 240935872
+      nfiles: 2
+    - path: config/config.yaml
+      hash: md5
+      md5: c8d41d54e3887617572ce5f31797a36f
+      size: 1083
+    - path: src/cnnClassifier/pipeline/stage_03_model_trainer.py
+      hash: md5
+      md5: c33e23d2c123f157b2ab007c8e9d938f
+      size: 893
+    params:
+      params.yaml:
+        AUGMENTATION: true
+        BATCH_SIZE: 16
+        EPOCHS: 10
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: artifacts/training/model.keras
+      hash: md5
+      md5: a342e0fcf0619fe2a350d680f4a6f34a
+      size: 248938720
+  evaluation:
+    cmd: python src/cnnClassifier/pipeline/stage_04_model_evaluation.py
+    deps:
+    - path: artifacts/data_ingestion/Cars-Tanks-Dataset
+      hash: md5
+      md5: b10e150d1c58831b22b34b6b5f7bc11b.dir
+      size: 54994658
+      nfiles: 1503
+    - path: artifacts/training/model.keras
+      hash: md5
+      md5: a342e0fcf0619fe2a350d680f4a6f34a
+      size: 248938720
+    - path: config/config.yaml
+      hash: md5
+      md5: c8d41d54e3887617572ce5f31797a36f
+      size: 1083
+    - path: src/cnnClassifier/pipeline/stage_04_model_evaluation.py
+      hash: md5
+      md5: 12e7c5f6ffc25d5e60bf984d1081c81a
+      size: 908
+    params:
+      params.yaml:
+        BATCH_SIZE: 16
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: artifacts/evaluation/confusion_matrix.json
+      hash: md5
+      md5: 7320cfc8b9586a6d752ea70865b9bbea
+      size: 314
+    - path: artifacts/evaluation/confusion_matrix.png
+      hash: md5
+      md5: 240762b22ceaacd717cfb0da8edd110e
+      size: 70451
+    - path: artifacts/evaluation/metrics.json
+      hash: md5
+      md5: 5fde525538f4c7639249864a0b888f82
+      size: 134
+    - path: artifacts/evaluation/roc_curve.png
+      hash: md5
+      md5: c239d329bdea47c8be40678828200308
+      size: 25810
+    - path: artifacts/evaluation/roc_data.json
+      hash: md5
+      md5: 1a693173550e5db8c4e9c798ef2b502a
+      size: 543

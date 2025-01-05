@@ -1,0 +1,22 @@
+tensorflow==2.10
+pandas 
+gdown
+dvc
+mlflow
+setuptools
+notebook
+numpy==1.23
+matplotlib
+seaborn
+python-box==6.0.2
+pyYAML
+tqdm
+ensure==1.0.2
+joblib
+types-PyYAML
+scipy
+gradio==3.1.4
+httpx==0.23.0
+httpcore==0.15.0
+h11==0.12.0
+-e .
